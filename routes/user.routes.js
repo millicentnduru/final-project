@@ -2,7 +2,7 @@ const router = require("express").Router();
 const User = require("../model/User.table");
 
 router.get("/", async (req, res) => {
-  const users = await User.find();
+  const users = await User.find().populate("tea_center");
   res.json(users);
 });
 // register user
@@ -41,9 +41,9 @@ router.post("/login", async (req, res) => {
   }
 });
 // delete user
-router.delete("/delete", async (req, res) => {
+router.delete("/delete/:id", async (req, res) => {
   try {
-    await User.findByIdAndDelete(req.body.id);
+    await User.findByIdAndDelete(req.params.id);
     res.json({ message: "user deleted" });
   } catch (error) {
     console.log(error);

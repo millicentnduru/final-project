@@ -4,7 +4,7 @@ const mongoose=require("mongoose")
 const CenterTable=mongoose.Schema({
     name:{
         type:String,
-        unique:true,
+        unique:true,    
     }
 
 },{timestamps:true})

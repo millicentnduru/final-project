@@ -23,11 +23,11 @@ try {
 
     })
     // delete center
-    router.delete("/delete", async (req, res) => {
+    router.delete("/delete/:id", async (req, res) => {
         try {
-         const center=await Center.findById(req.body.id)
+         const center=await Center.findById(req.params.id)
          if (center){
-          await Center.findByIdAndDelete(req.body.id);
+          await Center.findByIdAndDelete(req.params.id);
           res.json({ message: "center deleted" });
           // console.log(sale)
          }

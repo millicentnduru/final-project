@@ -9,8 +9,10 @@ const SalesTable= mongoose.Schema({
     },
     produce_amount:{
         type:String,
+    },
+    month:{
+        type:Date
     }
 
 } ,{timestamps:true})
 module.exports=mongoose.model("Sales",SalesTable)
-
