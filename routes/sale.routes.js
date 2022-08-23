@@ -38,5 +38,11 @@ router.delete("/delete", async (req, res) => {
     res.json({ message: error.message });
   }
 });
+//update sales
+router.put("/update/:id",async(req,res)=>{
+  const currentSale= await Sale.findByIdAndUpdate(req.params.id,req.body, { returnOriginal: false })
+
+  res.json(currentSale);
+})
 
 module.exports = router;
