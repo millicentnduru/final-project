@@ -2,10 +2,25 @@ const router = require("express").Router();
 const User = require("../model/User.table");
 
 router.get("/", async (req, res) => {
-  const users = await User.find().populate("tea_center");
+  const users = await User.find({
+    role: "farmer",
+  }).populate("tea_center");
+
   res.json(users);
 });
-// register user
+// register admin
+router.post("/register/admin", async (req, res) => {
+  try {
+    const newUser = await User.create({ ...req.body, role: "admin" });
+    res.json(newUser);
+  } catch (error) {
+    console.log(error);
+    res.json({
+      mesage: error.message,
+    });
+  }
+});
+// register Admin
 router.post("/register", async (req, res) => {
   try {
     const newUser = await User.create(req.body);
@@ -17,7 +32,22 @@ router.post("/register", async (req, res) => {
     });
   }
 });
+
+// register agent
+router.post("/register/agent", async (req, res) => {
+  try {
+    const newUser = await User.create({ ...req.body, role: "agent" });
+    res.json(newUser);
+  } catch (error) {
+    console.log(error);
+    res.json({
+      mesage: error.message,
+    });
+  }
+});
+
 // login user
+
 router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ phone_number: req.body.phone_number });
@@ -40,6 +70,59 @@ router.post("/login", async (req, res) => {
     });
   }
 });
+
+// LOGIN AS ADMIN
+router.post("/login/admin", async (req, res) => {
+  try {
+    const user = await User.findOne({ phone_number: req.body.phone_number });
+
+    // console.log(user);
+    if (!user) {
+      return res.status(401).json({ message: "User does not exist!" });
+    }
+
+    if (user && user?.role === "admin") {
+      if (user.password === req.body.password) {
+        return res.status(200).json(user);
+      } else {
+        return res.status(401).json({ message: "Invalid password" });
+      }
+    } else {
+      return res.status(401).json({ message: "Not authorised!" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      mesage: error.message,
+    });
+  }
+});
+
+router.post("/login/agent", async (req, res) => {
+  try {
+    const user = await User.findOne({ phone_number: req.body.phone_number });
+
+    // console.log(user);
+    if (!user) {
+      return res.status(401).json({ message: "User does not exist!" });
+    }
+
+    if (user && user?.role === "agent") {
+      if (user.password === req.body.password) {
+        return res.status(200).json(user);
+      } else {
+        return res.status(401).json({ message: "Invalid password" });
+      }
+    } else {
+      return res.status(401).json({ message: "Not authorised!" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      mesage: error.message,
+    });
+  }
+});
 // delete user
 router.delete("/delete/:id", async (req, res) => {
   try {
@@ -51,10 +134,12 @@ router.delete("/delete/:id", async (req, res) => {
   }
 });
 //update user
-router.put("/update/:id",async(req,res)=>{
-  const currentUser= await User.findByIdAndUpdate(req.params.id,req.body, { returnOriginal: false })
+router.put("/update/:id", async (req, res) => {
+  const currentUser = await User.findByIdAndUpdate(req.params.id, req.body, {
+    returnOriginal: false,
+  });
 
   res.json(currentUser);
-})
+});
 
 module.exports = router;

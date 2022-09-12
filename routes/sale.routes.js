@@ -21,28 +21,33 @@ router.post("/create", async (req, res) => {
 });
 router.delete("/delete", async (req, res) => {
   try {
-   const sale=await Sale.findById(req.body.id)
-   if (sale){
-    await Sale.findByIdAndDelete(req.body.id);
-    res.json({ message: "sale deleted" });
-    // console.log(sale)
-   }
-   else{
-    return res.status(501).json({message:"sale does not exist"})
-   }
-   
-   
-   
+    const sale = await Sale.findById(req.body.id);
+    if (sale) {
+      await Sale.findByIdAndDelete(req.body.id);
+      res.json({ message: "sale deleted" });
+      // console.log(sale)
+    } else {
+      return res.status(501).json({ message: "sale does not exist" });
+    }
   } catch (error) {
     console.log(error);
     res.json({ message: error.message });
   }
 });
 //update sales
-router.put("/update/:id",async(req,res)=>{
-  const currentSale= await Sale.findByIdAndUpdate(req.params.id,req.body, { returnOriginal: false })
+router.put("/update/:id", async (req, res) => {
+  const currentSale = await Sale.findByIdAndUpdate(req.params.id, req.body, {
+    returnOriginal: false,
+  });
 
   res.json(currentSale);
-})
+});
 
+// endpoint to fetch specific agent sales
+router.get("/sales/:a_id", async (req, res) => {
+  const salesMadeBySpecificAgent = await Sale.find({
+    agent: req.params?.a_id,
+  }).populate("user", "email name");
+  res.json(salesMadeBySpecificAgent);
+});
 module.exports = router;

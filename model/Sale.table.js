@@ -3,18 +3,21 @@ const mongoose = require("mongoose");
 
 const SalesTable = mongoose.Schema(
   {
-    month: {
-      type: String,
-      ref: "month",
-    },
-    produce_amount: {
+    comment: {
       type: String,
     },
-
-    tea_center: {
+    weight: {
+      type: Number,
+    },
+    user: {
       type: mongoose.Schema.Types.ObjectId,
-      required: "please input tea center",
-      ref: "Center", //this is the reference to table tea center
+      required: "please select user",
+      ref: "User", //this is the reference to table tea center
+    },
+    agent: {
+      type: mongoose.Schema.Types.ObjectId,
+      // required: "please select",
+      ref: "User",
     },
   },
   { timestamps: true }

@@ -7,8 +7,6 @@ const multer = require("multer");
 const path = require("path");
 const Doc = require("./model/Files");
 
-
-
 // configure .env
 dotenv.config();
 app.use(cors());
@@ -29,12 +27,10 @@ mongoose
 //   routing:
 // user-based routing
 
-app.use("/api/users",require("./routes/user.routes"))
-app.use("/api/center",require("./routes/center.routes"))
-app.use("/api/sale",require("./routes/sale.routes"))
-app.use("/api/file",require("./routes/files.routes"))
-
-
+app.use("/api/users", require("./routes/user.routes"));
+app.use("/api/center", require("./routes/center.routes"));
+app.use("/api/sale", require("./routes/sale.routes"));
+app.use("/api/file", require("./routes/files.routes"));
 
 const imageStorage = multer.diskStorage({
   // Destination to store image
@@ -70,7 +66,6 @@ app.post(
     const product = new Doc({
       productImage: req.file.path,
       message: req.body.message,
-      
     });
     product.save();
   },
@@ -79,7 +74,6 @@ app.post(
   }
 );
 
-
-app.listen(8081,()=>{
-    console.log("server started at port http://localhost:8081")
+app.listen(8081, () => {
+  console.log("server started at port http://localhost:8081");
 });
