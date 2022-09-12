@@ -10,12 +10,10 @@ import {
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { MainStateContext } from "../MainContext";
+import { MainStateContext } from "../../MainContext";
 
-const Login = () => {
+const AgentLogin = () => {
   const { user, setUser } = useContext(MainStateContext);
-
-  console.log(user);
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -29,7 +27,7 @@ const Login = () => {
 
     try {
       const loginUser = await axios.post(
-        "http://localhost:8081/api/users/login",
+        "http://localhost:8081/api/users/login/agent",
         {
           phone_number: phone,
           password: password,
@@ -43,7 +41,7 @@ const Login = () => {
         isClosable: true,
       });
 
-      navigate("/dashboard");
+      navigate("/agent/make_sale");
 
       setLoading(false);
     } catch (error) {
@@ -58,14 +56,6 @@ const Login = () => {
     // console.log(phone, password)
   };
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const res = await axios.get("http://localhost:8081/api/users");
-      console.log(res.data);
-    };
-    fetchUsers();
-  }, []);
-
   return (
     <Center bg="#38A169" h={"100vh"}>
       <Flex
@@ -77,7 +67,7 @@ const Login = () => {
         borderRadius={"md"}
       >
         <Heading textAlign={"center"} as="h6" size="lg">
-          Login
+          Agent Login
         </Heading>
         <Input
           placeholder="phone number"
@@ -114,18 +104,10 @@ const Login = () => {
           <br /> or
           <br />
           <Link
-            to={"/admin/login"}
+            to={"/login"}
             style={{ color: "#38A169", textDecorationLine: "underline" }}
           >
-            Login as admin
-          </Link>
-          <br /> or
-          <br />
-          <Link
-            to={"/agent/login"}
-            style={{ color: "#38A169", textDecorationLine: "underline" }}
-          >
-            Login as agent
+            Login as farmer
           </Link>
         </Text>
       </Flex>
@@ -133,4 +115,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AgentLogin;

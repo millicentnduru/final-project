@@ -22,10 +22,11 @@ import {
 import axios from "axios";
 import Sidenav from "../../components/Sidenav";
 import NewSaleModal from "../../components/NewSaleModal";
+import Navbar from "../../components/Navbar";
 
 function Sales() {
   const [sales, setSales] = useState([]);
-  const toast = useToast()
+  const toast = useToast();
 
   const [showModal, setShowModal] = useState(false);
   const [currentSale, setCurrentSale] = useState({});
@@ -33,7 +34,6 @@ function Sales() {
   const fetchSales = async () => {
     const sales = await axios.get("http://localhost:8081/api/sale");
     setSales(sales.data);
-    console.log(sales);
   };
   const handleDeleteSale = async (sale) => {
     if (window.confirm(`Are you sure you want to delete ${sale?.month}?`)) {
@@ -61,10 +61,10 @@ function Sales() {
   }, []);
 
   return (
-    <Box>
+    <Box bg={"gray.100"} minHeight={"95vh"}>
       <NewSaleModal
-      currentSale={currentSale}
-      handleFetch={fetchSales}
+        currentSale={currentSale}
+        handleFetch={fetchSales}
         title={"Add sale"}
         isOpen={showModal}
         onClose={() => {
@@ -72,46 +72,20 @@ function Sales() {
         }}
       />
       {/* navbar */}
-      <Box bg="green.200" p={1}>
-        {/* <GiPlantsAndAnimals /> */}
-        <Flex gap={2} alignItems="center">
-          <Icon
-            w={8}
-            h={8}
-            color="green.900"
-            style={{ marginLeft: "25px" }}
-            as={GiPlantsAndAnimals}
-          />
-          <Heading color="green.900" fontSize="lg" fontWeight="extrabold">
-            KANYENYAINI TEA FACTORY
-          </Heading>
-          <Spacer />
-          <Link
-            to={"/Profile"}
-            style={{ color: "blue", textDecorationLine: "underline" }}
-          >
-            <Image
-              style={{ marginRight: "40px" }}
-              borderRadius="full"
-              boxSize="50px"
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4oz0KdCvHj_hvY5exy-qFr06SPFjyA4ZoPg&usqp=CAU"
-              alt=""
-            />
-            <Text color="White">Profile</Text>
-          </Link>
-        </Flex>
-      </Box>
+
+      <Navbar />
+
       {/* sidebar */}
-      <Button
+      {/* <Button
         float="right"
         m="2"
         onClick={() => {
           setShowModal(true);
-          setCurrentSale({})
+          setCurrentSale({});
         }}
       >
         Add Sale
-      </Button>
+      </Button> */}
       <Flex>
         <Sidenav />
 
@@ -124,47 +98,26 @@ function Sales() {
           >
             Sales
           </Heading>
-          
-          <TableContainer size="lg">
+          <TableContainer>
             <Table size="lg">
               <Thead>
                 <Tr>
-                  <Th>Month</Th>
-                  <Th>Tea Center</Th>
-                  <Th>produce amount</Th>
-                  <Th>Date Updated</Th>
+                  <Th>Date</Th>
+                  <Th>User</Th>
+                  <Th>Weight</Th>
+                  <Th>Comment</Th>
                 </Tr>
               </Thead>
               <Tbody>
                 {sales.map((sale) => (
                   <Tr>
-                    <Td>{sale?.month}</Td>
-                    <Td>{sale?.tea_center?.name}</Td>
-                    <Td>{sale?.produce_amount}</Td>
-                    <Td>{sale?.time}</Td>
-                    
-                    
-                    <Td color="white" fontWeight="bold">
-                      <Button bg={"blue.500"} mr="4"
-                      onClick={() => {
-                        setCurrentSale({ ...sale });
-                        setShowModal(true);
-                      }}
-                      >
-                        Edit
-                      </Button>
-
-                      <Button
-                        bg={"red.500"}
-                        onClick={() => handleDeleteSale(sale)}
-                      >
-                        Delete
-                      </Button>
-                    </Td>
+                    <Td>{new Date(sale?.createdAt).toLocaleString(1, 11)}</Td>
+                    <Td>{sale?.user?.name}</Td>
+                    <Td>{sale?.weight}</Td>
+                    <Td>{sale?.comment}</Td>
                   </Tr>
                 ))}
               </Tbody>
-          
             </Table>
           </TableContainer>
         </Flex>

@@ -1,10 +1,11 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { Box, Button, Flex } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import { MainStateContext } from "../MainContext";
 
-function FarmerSide() {
+function AgentSideNav() {
   const { setUser } = useContext(MainStateContext);
+
   return (
     <Flex
       fontSize="md"
@@ -19,35 +20,27 @@ function FarmerSide() {
       }}
     >
       <Link
-        to={"/Dashboard"}
+        to={"/agent/sales"}
         style={{
           color: "black",
           paddingLeft: "30px",
           fontWeight: "inherit",
         }}
       >
-        Dashboard
+        Sales
       </Link>
+
       <Link
-        to={"/ChatFarmer"}
+        to={"/agent/make_sale"}
         style={{
           color: "black",
           paddingLeft: "30px",
           fontWeight: "inherit",
         }}
       >
-        Chat
+        Add Sale
       </Link>
-      <Link
-        to={"/Training"}
-        style={{
-          color: "black",
-          paddingLeft: "30px",
-          fontWeight: "inherit",
-        }}
-      >
-        Training
-      </Link>
+
       <Box
         pl={"30px"}
         cursor={"pointer"}
@@ -65,4 +58,4 @@ function FarmerSide() {
   );
 }
 
-export default FarmerSide;
+export default AgentSideNav;

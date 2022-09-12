@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import { GiPlantsAndAnimals } from "react-icons/gi";
 import {
@@ -10,48 +11,55 @@ import {
   Spacer,
   Text,
 } from "@chakra-ui/react";
-import FarmerSide from '../../components/FarmerSide';
+import FarmerSide from "../../components/FarmerSide";
+import Navbar from "../../components/Navbar";
 
 function Training() {
+  const [file, setFile] = useState([]);
+  const fetchFiles = () => {
+    axios
+      .get("http://localhost:8081/api/file")
+      .then((response) => {
+        setFile(response.data);
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  useEffect(() => {
+    fetchFiles();
+  }, []);
+  // console.log(file)
   return (
     <Box>
       {/* navbar */}
-      <Box bg="green.200" p={1}>
-        {/* <GiPlantsAndAnimals /> */}
-        <Flex gap={2} alignItems="center">
-          <Icon
-            w={8}
-            h={8}
-            color="green.900"
-            style={{ marginLeft: "25px" }}
-            as={GiPlantsAndAnimals}
-          />
-          <Heading color="green.900" fontSize="lg" fontWeight="extrabold">
-            KANYENYAINI TEA FACTORY
-          </Heading>
-          <Spacer />
-          <Link
-            to={"/Profile"}
-            style={{ color: "blue", textDecorationLine: "underline" }}
-          >
-            <Image
-              style={{ marginRight: "40px" }}
-              borderRadius="full"
-              boxSize="50px"
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4oz0KdCvHj_hvY5exy-qFr06SPFjyA4ZoPg&usqp=CAU"
-              alt=""
-            />
-            <Text color="White">Profile</Text>
-          </Link>
-        </Flex>
-      </Box>
+      <Navbar />
       {/* sidebar */}
-      <FarmerSide/>
-
-      
+      <FarmerSide />
+      <Flex>
+        {file?.map((data) => {
+          console.log(data);
+          return (
+            <Box>
+              <Box>
+                {JSON.stringify(data?.productImage)}
+                {
+                  <Image
+                    src={`http://localhost:8081/images/file_1661256183431.jpg`}
+                    alt="photoo"
+                    height={"100px"}
+                    width={"100px"}
+                  />
+                }
+                {data.message}
+              </Box>
+            </Box>
+          );
+        })}
+      </Flex>
     </Box>
-  
-  )
+  );
 }
 
-export default Training
+export default Training;

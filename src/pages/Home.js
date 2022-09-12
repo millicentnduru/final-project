@@ -22,7 +22,7 @@ function Home() {
   }, []);
   return (
     <Box>
-      <Box bg="green.400" p={5}>
+      <Box bg="green.400" p="10">
         {/* <GiPlantsAndAnimals /> */}
         <Flex gap={2} alignItems="center">
           <Icon
@@ -64,8 +64,8 @@ function Home() {
 
       <Heading
         color="green.900"
-        fontSize="md"
-        paddingTop="50px"
+        fontSize="lg"
+        paddingTop="30px"
         paddingBottom="30px"
       >
         ABOUT KANYENYAINI TEA FACTORY
@@ -98,17 +98,17 @@ function Home() {
           the Kenyan highlands.
         </Text>
         
-
-        <Box>
-          <Image 
+<Spacer/>
+       
+          <Image w={"50%"}
             src="https://www.kenyanews.go.ke/wp-content/uploads/2020/07/DSC_0104.JPG-Tea-e1594804831416.jpg"
             alt=""
           />
-        </Box>
+        
       </Flex>
 
       {/* footer page */}
-      <Box paddingTop="150px">
+      <Box >
         <Flex bg="green.400" paddingTop="30px" paddingBottom="30px">
           <Box style={{ paddingLeft: "150px" }}>
             <Heading color="green.900" fontSize="lg">

@@ -1,6 +1,5 @@
-import React from 'react'
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-
 import {
   Box,
   Flex,
@@ -9,127 +8,174 @@ import {
   Image,
   Spacer,
   Text,
-  Container,
+  Input,
+  Button,
 } from "@chakra-ui/react";
-
+import { FiSend } from "react-icons/fi";
+import {
+  collection,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+  setDoc,
+  Timestamp,
+} from "firebase/firestore";
 import { GiPlantsAndAnimals } from "react-icons/gi";
 
-import FarmerSide from '../../components/FarmerSide';
+import FarmerSide from "../../components/FarmerSide";
+import moment from "moment";
+import { db } from "../../firebaseConfig";
+import shortid from "shortid";
+import { MainStateContext } from "../../MainContext";
+import Navbar from "../../components/Navbar";
 
 function ChatFarmer() {
+  const { user } = useContext(MainStateContext);
+
+  const [newMessage, setNewMessage] = useState("");
+  const [loading, setLoading] = useState("");
+  const [messages, setMessages] = useState([]);
+
+  console.log("USER  IS:", user);
+
+  React.useEffect(() => {
+    setLoading(true);
+
+    // execute query
+    const q = query(collection(db, "messages"), orderBy("createdAt"));
+    const unsub = onSnapshot(q, (querySnapshot) => {
+      let list = [];
+      querySnapshot.forEach((doc) => {
+        if (doc.data()) {
+          const n = { id: doc.id, ...doc.data() };
+          list.push(n);
+        } else {
+          setMessages({ messages: [] });
+        }
+        setMessages(list);
+        setLoading(false);
+      });
+    });
+    return () => unsub();
+  }, []);
+
+  const handleMessageChange = (e) => {
+    const messo = {
+      text: e?.target?.value,
+      sentAt: new Date().toISOString(),
+      sender_id: user?._id,
+      sender_name: user?.name,
+      createdAt: serverTimestamp(),
+    };
+    setNewMessage(messo);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    setNewMessage({ text: "" });
+    saveMessage();
+  };
+
+  async function saveMessage() {
+    const id = shortid.generate();
+    await setDoc(doc(db, "messages", id), {
+      ...newMessage,
+    });
+  }
+
   return (
-    <Box>
-    <Box bg="green.200" p={1}>
-      {/* <GiPlantsAndAnimals /> */}
-      <Flex gap={2} alignItems="center">
-        <Icon
-          w={8}
-          h={8}
-          color="green.900"
-          style={{ marginLeft: "25px" }}
-          as={GiPlantsAndAnimals}
-        />
-        <Heading color="green.900" fontSize="lg" fontWeight="extrabold">
-          KANYENYAINI TEA FACTORY
-        </Heading>
-        <Spacer />
-        <Link
-          to={"/Profile"}
-          style={{ color: "blue", textDecorationLine: "underline" }}
+    <Box bg={"gray.100"} minHeight={"95vh"}>
+      <Navbar />
+
+      <Flex>
+        <FarmerSide />
+        <Flex
+          // bg={"gray.200"}
+          // bg={"green.50"}
+          w={"100%"}
+          padding={5}
+          gap={6}
+          direction={"column"}
+          overflowY={"scroll"}
+          position={"relative"}
+          // maxH={"80vh"}
         >
-          <Image
-            style={{ marginRight: "40px" }}
-            borderRadius="full"
-            boxSize="50px"
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4oz0KdCvHj_hvY5exy-qFr06SPFjyA4ZoPg&usqp=CAU"
-            alt=""
-          />
-          <Text color="White">Profile</Text>
-        </Link>
+          <Box
+            h={"full"}
+            overflowY={"scroll"}
+            p={"1"}
+            bg={"white"}
+            maxHeight={"560px"}
+          >
+            {messages?.map((message) => (
+              <MessageItem
+                senderName={message?.sender_name}
+                message={message.text}
+                timeSent={message.sentAt}
+                floatingPosition={message.sender_id === user?._id && "flex-end"}
+              />
+            ))}
+          </Box>
+          <form onSubmit={handleSubmit}>
+            <Flex
+              borderWidth={"1"}
+              h={"14"}
+              bg={"white"}
+              borderRadius={"xl"}
+              position={"absolute"}
+              bottom={"2"}
+              right={"9"}
+              left={"5"}
+            >
+              <Input
+                value={newMessage?.text}
+                onChange={handleMessageChange}
+                p={"2"}
+                h={"full"}
+                borderWidth={0}
+                placeholder={"Type message here ..."}
+              />
+
+              <Button
+                h={"full"}
+                bg={"none"}
+                borderRadius={"none"}
+                _hover={{ bg: "gray.50" }}
+                type={"submit"}
+              >
+                <FiSend />
+              </Button>
+            </Flex>
+          </form>
+        </Flex>
       </Flex>
     </Box>
-    <Flex>
-      <FarmerSide/>
-      <Flex
-        bg={"green.50"}
-        w={"100%"}
-        padding={5}
-        gap={6}
-        direction={"column"}
-      >
-        <Flex flexDirection={"row"}>
-          <Image
-            style={{ marginRight: "20px" }}
-            borderRadius="full"
-            boxSize="50px"
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4oz0KdCvHj_hvY5exy-qFr06SPFjyA4ZoPg&usqp=CAU"
-            alt=""
-          />
-          <Text color="black" pt="3">
-            Mark Maina
-          </Text>
-        </Flex>
-        <Flex flexDirection={"column"}>
-          <Container
-            fontSize="2xl"
-            bg={"white"}
-            p="8"
-            borderRadius={"md"}
-            border="1px"
-            fontWeight={"light"}
-          >
-            This is my message
-          </Container>
-        </Flex>
-
-        <Flex flexDirection={"row"} pl="5">
-          <Image
-            style={{ marginRight: "20px" }}
-            borderRadius="full"
-            boxSize="40px"
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4oz0KdCvHj_hvY5exy-qFr06SPFjyA4ZoPg&usqp=CAU"
-            alt=""
-          />
-          <Text color="black" pt="3">
-            Nduru Millicent(Admin)
-          </Text>
-        </Flex>
-        <Flex flexDirection={"column"}>
-          <Container
-            fontSize="2xl"
-            bg={"white"}
-            p="8"
-            fontWeight={"light"}
-            borderRadius={"md"}
-            border="1px"
-          >
-            This is my reply
-          </Container>
-        </Flex>
-        <Flex flexDirection={"column"}>
-          <Image
-            style={{ marginRight: "20px" }}
-            borderRadius="full"
-            boxSize="0px"
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4oz0KdCvHj_hvY5exy-qFr06SPFjyA4ZoPg&usqp=CAU"
-            alt=""
-          />
-
-          <Container
-            fontSize="2xl"
-            bg={"white"}
-            fontWeight={"light"}
-            p="5"
-            borderRadius={"md"}
-            border="1px"
-          >
-            Write a message
-          </Container>
-        </Flex>
-      </Flex>
-    </Flex>
-  </Box>
-  )
+  );
 }
 
-export default ChatFarmer
+export default ChatFarmer;
+
+const MessageItem = ({ message, senderName, timeSent, floatingPosition }) => (
+  <Flex justifyContent={floatingPosition} p={"1"}>
+    <Box maxWidth={"50%"}>
+      <Text fontWeight={"semibold"} fontSize={"xs"}>
+        {senderName}
+      </Text>
+      <Box
+        borderRadius={"md"}
+        py={"1"}
+        px={"2"}
+        bg={"green.200"}
+        flexGrow={"0"}
+        display={"block"}
+      >
+        <Text fontWeight={"medium"}>{message}</Text>
+
+        <Text fontSize={"xs"}>{moment(timeSent).fromNow()}</Text>
+      </Box>
+    </Box>
+  </Flex>
+);

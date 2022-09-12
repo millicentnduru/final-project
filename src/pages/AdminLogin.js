@@ -1,3 +1,4 @@
+import React, { useContext, useEffect, useState } from "react";
 import {
   Center,
   Input,
@@ -6,14 +7,12 @@ import {
   Heading,
   Text,
   useToast,
-  Select,
 } from "@chakra-ui/react";
-import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import { MainStateContext } from "../MainContext";
 
-const Register = () => {
+const AdminLogin = () => {
   const { user, setUser } = useContext(MainStateContext);
 
   console.log(user);
@@ -21,49 +20,34 @@ const Register = () => {
   const toast = useToast();
   const navigate = useNavigate();
 
-  const [centers, setCenters] = useState([]);
-  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [center, setCenter] = useState("");
   const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
 
-  const handleSubmit = async () => {
+  const handleLogin = async () => {
     setLoading(true);
 
-    if (password !== confirm) {
-      toast({
-        title: "Passwords do not match!",
-        status: "error",
-        isClosable: true,
-      });
-
-      return;
-    }
     try {
-      const registerUser = await axios.post(
-        "http://localhost:8081/api/users/register",
+      const loginUser = await axios.post(
+        "http://localhost:8081/api/users/login/admin",
         {
-          name: name,
           phone_number: phone,
-          email: email,
           password: password,
-          tea_center: center,
         }
       );
-      setUser(registerUser.data);
+      setUser(loginUser.data);
 
       toast({
-        title: "Registration Successful",
+        title: "Login Successful!",
         status: "success",
         isClosable: true,
       });
-      navigate("/dashboard");
+
+      navigate("/Admin");
 
       setLoading(false);
     } catch (error) {
+      console.log(error);
       toast({
         title: error.response.data?.message,
         status: "error",
@@ -71,22 +55,15 @@ const Register = () => {
       });
       setLoading(false);
     }
+    // console.log(phone, password)
   };
+
   useEffect(() => {
     const fetchUsers = async () => {
       const res = await axios.get("http://localhost:8081/api/users");
       console.log(res.data);
     };
     fetchUsers();
-  }, []);
-
-  useEffect(() => {
-    const fetchCenters = async () => {
-      const centers = await axios.get("http://localhost:8081/api/center");
-      setCenters(centers.data);
-      // console.log(centers.data);
-    };
-    fetchCenters();
   }, []);
 
   return (
@@ -100,35 +77,11 @@ const Register = () => {
         borderRadius={"md"}
       >
         <Heading textAlign={"center"} as="h6" size="lg">
-          Register
+          Admin Login
         </Heading>
         <Input
-          placeholder="full name"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-        />
-
-        <Select
-          defaultValue={center}
-          onChange={(event) => {
-            setCenter(event.target.value);
-          }}
-          placeholder={"--Select center--"}
-        >
-          {centers.map((center) => (
-            <option value={center._id}>{center.name}</option>
-          ))}
-        </Select>
-
-        <Input
-          placeholder="email@example.com"
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-        />
-
-        <Input
           placeholder="phone number"
+          type={"phone"}
           value={phone}
           onChange={(event) => setPhone(event.target.value)}
         />
@@ -138,14 +91,9 @@ const Register = () => {
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />
-        <Input
-          placeholder="confirm password"
-          type={"password"}
-          value={confirm}
-          onChange={(event) => setConfirm(event.target.value)}
-        />
+
         <Button
-          onClick={() => handleSubmit()}
+          onClick={() => handleLogin()}
           colorScheme={"green"}
           fontSize={"lg"}
           textTransform={"uppercase"}
@@ -153,15 +101,23 @@ const Register = () => {
           mx={"auto"}
           disabled={loading}
         >
-          {loading === true ? " Loading . . ." : "Register"}
+          {loading === true ? " Loading . . ." : "Login"}
         </Button>
         <Text fontSize="md" textAlign={"center"}>
-          Already regitered?{" "}
+          Have no account?{" "}
+          <Link
+            to={"/register"}
+            style={{ color: "#38A169", textDecorationLine: "underline" }}
+          >
+            click here to Register
+          </Link>
+          <br /> or
+          <br />
           <Link
             to={"/login"}
             style={{ color: "#38A169", textDecorationLine: "underline" }}
           >
-            click here to login
+            Login as farmer
           </Link>
         </Text>
       </Flex>
@@ -169,4 +125,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default AdminLogin;

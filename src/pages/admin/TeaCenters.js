@@ -23,6 +23,7 @@ import axios from "axios";
 import Sidenav from "../../components/Sidenav";
 
 import NewCenterModal from "../../components/NewCenterModal";
+import Navbar from "../../components/Navbar";
 
 function TeaCenters() {
   const [Centers, setCenters] = useState([]);
@@ -34,7 +35,6 @@ function TeaCenters() {
   const fetchCenters = async () => {
     const Centers = await axios.get("http://localhost:8081/api/center");
     setCenters(Centers.data);
-    console.log(Centers);
   };
   const handleDeleteCenter = async (center) => {
     if (window.confirm(`Are you sure you want to delete ${center?.name}?`)) {
@@ -60,7 +60,7 @@ function TeaCenters() {
     fetchCenters();
   }, []);
   return (
-    <Box>
+    <Box bg={"gray.100"} minHeight={"95vh"}>
       <NewCenterModal
         currentCenter={currentCenter}
         handleFetch={fetchCenters}
@@ -71,44 +71,19 @@ function TeaCenters() {
         }}
       />
       {/* navbar */}
-      <Flex bg="green.200" p={1}>
-        {/* <GiPlantsAndAnimals /> */}
-        <Flex gap={2} alignItems="center">
-          <Icon
-            w={8}
-            h={8}
-            color="green.900"
-            style={{ marginLeft: "25px" }}
-            as={GiPlantsAndAnimals}
-          />
-          <Heading color="green.900" fontSize="lg" fontWeight="extrabold">
-            KANYENYAINI TEA FACTORY
-          </Heading>
-          <Spacer />
-          <Link
-            to={"/Profile"}
-            style={{ color: "blue", textDecorationLine: "underline" }}
-          >
-            <Image
-              style={{ marginRight: "40px" }}
-              borderRadius="full"
-              boxSize="50px"
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4oz0KdCvHj_hvY5exy-qFr06SPFjyA4ZoPg&usqp=CAU"
-              alt=""
-            />
-            <Text color="White">Profile</Text>
-          </Link>
-        </Flex>
-      </Flex>
+
+      {/* <GiPlantsAndAnimals /> */}
+      <Navbar />
+
       <Button
         float="right"
         m="2"
         onClick={() => {
           setShowModal(true);
-          setCurrentCenter({})
+          setCurrentCenter({});
         }}
       >
-        Add Sale
+        Add Center
       </Button>
       <Flex>
         {/* sidebar */}

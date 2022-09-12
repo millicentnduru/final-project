@@ -1,21 +1,16 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import { ChakraProvider } from '@chakra-ui/react'
-import MainContext from './MainContext';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import { ChakraProvider } from "@chakra-ui/react";
+import "react-toastify/dist/ReactToastify.css";
+// import MainContext from "./context/Context";
 
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-   <MainContext>
-
     <ChakraProvider>
       <App />
     </ChakraProvider>
-    </MainContext>
   </React.StrictMode>
 );
-
-

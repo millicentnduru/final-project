@@ -8,83 +8,130 @@ import {
   Square,
   Text,
 } from "@chakra-ui/react";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { GiPlantsAndAnimals } from "react-icons/gi";
 import { MainStateContext } from "../../MainContext";
 import FarmerSide from "../../components/FarmerSide";
+import { Bar } from "react-chartjs-2";
+import { Chart, registerables } from "chart.js";
+import axios from "axios";
+import Navbar from "../../components/Navbar";
 
 function Dashboard() {
-  const {user}= useContext(MainStateContext)
-  const navigate = useNavigate()
+  const { user } = useContext(MainStateContext);
+  const navigate = useNavigate();
+  const [chartMonths, setChatMonths] = useState([]);
+  const [chartDart, setChartData] = useState("");
+  const [Data, setData] = useState([]);
 
+  Chart.register(...registerables);
+  // console.log(Data);
+  const MONTHS = useMemo(
+    () => [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ],
+    []
+  );
+  // fetch
+  const fetchData = async () => {
+    await axios
+      .get("http://localhost:8081/api/sale")
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
+  // END
+  useEffect(() => {
+    fetchData();
+    const months = Object.entries(
+      Data.reduce((b, a) => {
+        let m = a.updatedAt.split("T")[0].substr(0, 7) + "-01";
+        if (b.hasOwnProperty(m)) b[m].push(a);
+        else b[m] = [a];
+        return b;
+      }, {})
+    )
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map((e) => ({ [e[0]]: e[1] }));
 
-//   useEffect(() => {
-//     if(!user?._id){
-// Navigate("/login")
-//     }
-//   }, []);
+    let mArr = [];
+    let monthlyTotals = [];
+    months.forEach((item) => {
+      const key = Object.keys(item)[0];
+      const monthOfDate = MONTHS[new Date(key).getMonth()];
+      mArr.push(monthOfDate);
+      // console.log("Key is", item);
+      const arrayOfProducts = Object.values(item)[0];
+
+      // console.log(arrayOfProducts);
+
+      const totalMonth = arrayOfProducts.reduce(function (acc, obj) {
+        return acc + parseInt(obj.produce_amount);
+      }, 0);
+      monthlyTotals.push(totalMonth);
+    });
+    setChatMonths(mArr);
+    // console.log(chartMonths);
+    // console.log(monthlyTotals);
+    setChartData(monthlyTotals);
+  }, [Data]);
+  // console.log(Data);
+  const data = {
+    labels: chartMonths,
+    datasets: [
+      {
+        label: " Monthly Records for your produce",
+        data: chartDart,
+        backgroundColor: [
+          "blue",
+          "green",
+          "yellow",
+          "orange",
+          "grey",
+          "indigo",
+          "purple",
+          "brown",
+          "red",
+          "violet",
+          "pink",
+          "green",
+          ,
+        ],
+      },
+    ],
+  };
+  // end
 
   return (
     <Box>
-      <Box bg="green.200" p={1}>
-        {/* <GiPlantsAndAnimals /> */}
-        <Flex gap={2} alignItems="center">
-          <Icon
-            w={8}
-            h={8}
-            color="green.900"
-            style={{ marginLeft: "25px" }}
-            as={GiPlantsAndAnimals}
-          />
-          <Heading color="green.900" fontSize="lg" fontWeight="extrabold">
-            KANYENYAINI TEA FACTORY
-          </Heading>
-          <Spacer />
-          <Link
-            to={"/Profile"}
-            style={{ color: "blue", textDecorationLine: "underline" }}
-          >
-            <Image
-              style={{ marginRight: "40px" }}
-              borderRadius="full"
-              boxSize="50px"
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4oz0KdCvHj_hvY5exy-qFr06SPFjyA4ZoPg&usqp=CAU"
-              alt=""
-            />
-            <Text color="White">Profile</Text>
-          </Link>
-        </Flex>
-      </Box>
+      <Navbar />
       <Flex>
-       <FarmerSide/>
-       
+        <FarmerSide />
+
         <Flex flexDirection="column">
           <Box flex="1" flexDirection="row" size="150px">
             <Text p={5} fontWeight="bold">
-              Monthly records graph for KTF
+              Monthly records graph for your produce
             </Text>
           </Box>
-          <Flex
-            flexDirection="row"
-           
-            
-          >
-            <Box bg="green.500" gap="30px">
-              <Text>one</Text>
-            </Box>
-            <Spacer/>
-
-            <Square bg="blue.500"gap="40px">
-              <Text>two</Text>
-            </Square>
-            <Spacer/>
-
-            <Box bg="tomato">
-              <Text>three</Text>
-            </Box>
+          <Flex>
+            <Bar data={data} style={{ width: "840px", height: "300px" }} />
           </Flex>
-
           <Box flex="15px" flexDirection="row" bg="green.50" width="380%">
             <Text pt={5} fontWeight="medium">
               <Spacer />

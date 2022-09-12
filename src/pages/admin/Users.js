@@ -23,10 +23,10 @@ import {
 import axios from "axios";
 import Sidenav from "../../components/Sidenav";
 import NewItemModal from "../../components/NewItemModal";
+import Navbar from "../../components/Navbar";
 function Users() {
   const [users, setUsers] = useState([]);
-const toast = useToast()
-
+  const toast = useToast();
 
   const [showModal, setShowModal] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
@@ -36,31 +36,33 @@ const toast = useToast()
     setUsers(users.data);
     console.log(users);
   };
-  const handleDeleteUser = async(user) => {
+  const handleDeleteUser = async (user) => {
     if (window.confirm(`Are you sure you want to delete ${user?.name}?`)) {
       try {
-        await axios.delete(`http://localhost:8081/api/users/delete/${user?._id}`);
+        await axios.delete(
+          `http://localhost:8081/api/users/delete/${user?._id}`
+        );
 
-        fetchUsers()
+        fetchUsers();
         toast({
-          title:"user deleted!",
+          title: "user deleted!",
           status: "success",
           isClosable: true,
-        })
+        });
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     } else {
       return;
     }
   };
-  
+
   useEffect(() => {
     fetchUsers();
   }, []);
 
   return (
-    <Box>
+    <Box bg={"gray.100"} minHeight={"95vh"}>
       <NewItemModal
         currentUser={currentUser}
         handleFetch={fetchUsers}
@@ -71,43 +73,14 @@ const toast = useToast()
         }}
       />
       {/* navbar */}
-      <Box bg="green.200" p={1}>
-        {/* <GiPlantsAndAnimals /> */}
-        <Flex gap={2} alignItems="center">
-          <Icon
-            w={8}
-            h={8}
-            color="green.900"
-            style={{ marginLeft: "25px" }}
-            as={GiPlantsAndAnimals}
-          />
-          <Heading color="green.900" fontSize="lg" fontWeight="extrabold">
-            KANYENYAINI TEA FACTORY
-          </Heading>
-          <Spacer />
-          <Link
-            to={"/Profile"}
-            style={{ color: "blue", textDecorationLine: "underline" }}
-          >
-            <Image
-              style={{ marginRight: "40px" }}
-              borderRadius="full"
-              boxSize="50px"
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4oz0KdCvHj_hvY5exy-qFr06SPFjyA4ZoPg&usqp=CAU"
-              alt=""
-            />
-            <Text color="White">Profile</Text>
-          </Link>
-        </Flex>
-      </Box>
+      <Navbar />
       {/* sidebar */}
       <Button
         float="right"
         m="2"
         onClick={() => {
           setShowModal(true);
-          setCurrentUser({})
-
+          setCurrentUser({});
         }}
       >
         Add User
@@ -144,11 +117,13 @@ const toast = useToast()
                     <Td>{user?.tea_center?.name}</Td>
                     <Td>{user?.email}</Td>
                     <Td color="white" fontWeight="bold">
-                      <Button bg={"blue.500"} mr="4"
-                      onClick={() => {
-                        setCurrentUser({ ...user });
-                        setShowModal(true);
-                      }}
+                      <Button
+                        bg={"blue.500"}
+                        mr="4"
+                        onClick={() => {
+                          setCurrentUser({ ...user });
+                          setShowModal(true);
+                        }}
                       >
                         Edit
                       </Button>
