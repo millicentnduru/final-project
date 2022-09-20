@@ -2,9 +2,7 @@ const router = require("express").Router();
 const User = require("../model/User.table");
 
 router.get("/", async (req, res) => {
-  const users = await User.find({
-    role: "farmer",
-  }).populate("tea_center");
+  const users = await User.find().populate("tea_center");
 
   res.json(users);
 });

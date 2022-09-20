@@ -50,4 +50,12 @@ router.get("/sales/:a_id", async (req, res) => {
   }).populate("user", "email name");
   res.json(salesMadeBySpecificAgent);
 });
+
+// fetch specific farmer sales.
+router.get("/farmer_sales/:farmer_id", async (req, res) => {
+  const salesForSpecificFarmer = await Sale.find({
+    user: req.params?.farmer_id,
+  });
+  res.json(salesForSpecificFarmer);
+});
 module.exports = router;
