@@ -1,16 +1,18 @@
 import {
   Box,
   Flex,
-  Heading,
-  Icon,
-  Image,
   Spacer,
-  Square,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
   Text,
+  Th,
+  Thead,
+  Tr,
 } from "@chakra-ui/react";
 import React, { useContext, useEffect, useState, useMemo } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { GiPlantsAndAnimals } from "react-icons/gi";
+import { useNavigate } from "react-router-dom";
 import { MainStateContext } from "../../MainContext";
 import FarmerSide from "../../components/FarmerSide";
 import { Bar } from "react-chartjs-2";
@@ -45,9 +47,9 @@ function Dashboard() {
     []
   );
   // fetch
-  const fetchData = async () => {
-    await axios
-      .get("http://localhost:8081/api/sale")
+  const fetchData = () => {
+    axios
+      .get(`http://localhost:8081/api/sale/farmer_sales/${user?._id}`)
       .then((response) => {
         setData(response.data);
       })
@@ -55,9 +57,13 @@ function Dashboard() {
         console.log(error.message);
       });
   };
-  // END
+
   useEffect(() => {
     fetchData();
+  }, []);
+
+  // END
+  useEffect(() => {
     const months = Object.entries(
       Data.reduce((b, a) => {
         let m = a.updatedAt.split("T")[0].substr(0, 7) + "-01";
@@ -71,6 +77,8 @@ function Dashboard() {
 
     let mArr = [];
     let monthlyTotals = [];
+
+    console.log("MONTHS", months);
     months.forEach((item) => {
       const key = Object.keys(item)[0];
       const monthOfDate = MONTHS[new Date(key).getMonth()];
@@ -81,7 +89,7 @@ function Dashboard() {
       // console.log(arrayOfProducts);
 
       const totalMonth = arrayOfProducts.reduce(function (acc, obj) {
-        return acc + parseInt(obj.produce_amount);
+        return acc + parseInt(obj.weight);
       }, 0);
       monthlyTotals.push(totalMonth);
     });
@@ -115,6 +123,10 @@ function Dashboard() {
       },
     ],
   };
+
+  const HandleBar = React.useCallback(() => (
+    <Bar data={data} style={{ width: "840px", height: "300px" }} />
+  ));
   // end
 
   return (
@@ -128,43 +140,31 @@ function Dashboard() {
             <Text p={5} fontWeight="bold">
               Monthly records graph for your produce
             </Text>
+
+            {HandleBar()}
           </Box>
           <Flex>
-            <Bar data={data} style={{ width: "840px", height: "300px" }} />
+            <TableContainer size="lg">
+              <Table size="lg">
+                <Thead>
+                  <Tr>
+                    <Th>Date</Th>
+                    <Th>Weight</Th>
+                    <Th>Comment</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {Data.slice(0, 5).map((sale) => (
+                    <Tr>
+                      <Td>{new Date(sale?.createdAt).toLocaleString(1, 11)}</Td>
+                      <Td>{sale?.weight}</Td>
+                      <Td>{sale?.comment}</Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+            </TableContainer>
           </Flex>
-          <Box flex="15px" flexDirection="row" bg="green.50" width="380%">
-            <Text pt={5} fontWeight="medium">
-              <Spacer />
-              Recent activities during the month
-            </Text>
-            <Flex as="ins">
-              <Spacer />
-              <Text p={2}>No</Text>
-              <Spacer />
-              <Text p={2}>Date</Text>
-              <Spacer />
-              <Text p={2}>Produce</Text>
-              <Spacer />
-            </Flex>
-            <Flex>
-              <Spacer />
-              <Text p={2}>1</Text>
-              <Spacer />
-              <Text p={2}>03/04/2022</Text>
-              <Spacer />
-              <Text p={2}>37kg</Text>
-              <Spacer />
-            </Flex>
-            <Flex>
-              <Spacer />
-              <Text p={2}>2</Text>
-              <Spacer />
-              <Text p={2}>07/05/2022</Text>
-              <Spacer />
-              <Text p={2}>52kg</Text>
-              <Spacer />
-            </Flex>
-          </Box>
         </Flex>
       </Flex>
     </Box>

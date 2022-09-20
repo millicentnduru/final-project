@@ -109,6 +109,7 @@ function ChatFarmer() {
             p={"1"}
             bg={"white"}
             maxHeight={"560px"}
+            mb={"4"}
           >
             {messages?.map((message) => (
               <MessageItem
@@ -123,7 +124,7 @@ function ChatFarmer() {
             <Flex
               borderWidth={"1"}
               h={"14"}
-              bg={"white"}
+              bg={"green.100"}
               borderRadius={"xl"}
               position={"absolute"}
               bottom={"2"}

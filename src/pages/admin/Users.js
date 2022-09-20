@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { GiPlantsAndAnimals } from "react-icons/gi";
 
 import {
   Box,
   Button,
   Flex,
   Heading,
-  Icon,
-  Image,
-  Spacer,
   Table,
   TableContainer,
   Tbody,
   Td,
-  Text,
   Th,
   Thead,
   Tr,
@@ -99,13 +93,14 @@ function Users() {
           </Heading>
 
           <TableContainer size="lg">
-            <Table size="lg">
+            <Table size="md">
               <Thead>
                 <Tr>
                   <Th>Name</Th>
                   <Th>Phone Number</Th>
                   <Th>Tea Center</Th>
                   <Th>Email</Th>
+                  <Th>Role</Th>
                   <Th>Actions</Th>
                 </Tr>
               </Thead>
@@ -116,6 +111,7 @@ function Users() {
                     <Td>{user?.phone_number}</Td>
                     <Td>{user?.tea_center?.name}</Td>
                     <Td>{user?.email}</Td>
+                    <Td>{user?.rolef}</Td>
                     <Td color="white" fontWeight="bold">
                       <Button
                         bg={"blue.500"}

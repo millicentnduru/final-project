@@ -1,34 +1,16 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { GiPlantsAndAnimals } from "react-icons/gi";
+
 import { Chart, registerables } from "chart.js";
 import axios from "axios";
 
-import {
-  Box,
-  Button,
-  Container,
-  Flex,
-  Heading,
-  Icon,
-  Image,
-  Spacer,
-  Square,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-} from "@chakra-ui/react";
+import { Box, Flex, Text } from "@chakra-ui/react";
 import Sidenav from "../../components/Sidenav";
 import { Bar } from "react-chartjs-2";
 import Navbar from "../../components/Navbar";
 
 function Admin() {
   const [chartMonths, setChatMonths] = useState([]);
-  const [chartDart, setChartData] = useState("");
+  const [chartData, setChartData] = useState("");
   const [Data, setData] = useState([]);
 
   Chart.register(...registerables);
@@ -51,8 +33,8 @@ function Admin() {
     []
   );
   // fetch
-  const fetchData = async () => {
-    await axios
+  const fetchData = () => {
+    axios
       .get("http://localhost:8081/api/sale")
       .then((response) => {
         setData(response.data);
@@ -61,50 +43,53 @@ function Admin() {
         console.log(error.message);
       });
   };
-  // END
+
   useEffect(() => {
     fetchData();
-    const months = Object.entries(
-      Data.reduce((b, a) => {
-        let m = a.createdAt.split("T")[0].substr(0, 7) + "-01";
-        if (b.hasOwnProperty(m)) b[m].push(a);
-        else b[m] = [a];
-        return b;
-      }, {})
-    )
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .map((e) => ({ [e[0]]: e[1] }));
-
-    let mArr = [];
-    let monthlyTotals = [];
-
-    console.log("MONTS", months);
-    months.forEach((item) => {
-      const key = Object.keys(item)[0];
-      const monthOfDate = MONTHS[new Date(key).getMonth()];
-      mArr.push(monthOfDate);
-      // console.log("Key is", item);
-      const arrayOfProducts = Object.values(item)[0];
-
-      // console.log(arrayOfProducts);
-
-      const totalMonth = arrayOfProducts.reduce(function (acc, obj) {
-        return acc + parseInt(obj.weight);
-      }, 0);
-      monthlyTotals.push(totalMonth);
-    });
-    setChatMonths(mArr);
-    // console.log(chartMonths);
-    // console.log(monthlyTotals);
-    setChartData(monthlyTotals);
   }, []);
-  // console.log(Data);
+
+  // END
+  useEffect(() => {
+    if (Data.length > 0) {
+      const months = Object.entries(
+        Data.reduce((b, a) => {
+          let m = a.updatedAt.split("T")[0].substr(0, 7) + "-01";
+          if (b.hasOwnProperty(m)) b[m].push(a);
+          else b[m] = [a];
+          return b;
+        }, {})
+      )
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map((e) => ({ [e[0]]: e[1] }));
+
+      let mArr = [];
+      let monthlyTotals = [];
+
+      months.forEach((item) => {
+        const key = Object.keys(item)[0];
+        const monthOfDate = MONTHS[new Date(key).getMonth()];
+        mArr.push(monthOfDate);
+        // console.log("Key is", item);
+        const arrayOfProducts = Object.values(item)[0];
+
+        const totalMonth = arrayOfProducts.reduce(function (acc, obj) {
+          return acc + parseInt(obj.weight);
+        }, 0);
+        monthlyTotals.push(totalMonth);
+      });
+      setChatMonths(mArr);
+      // console.log(chartMonths);
+      // console.log(monthlyTotals);
+      setChartData(monthlyTotals);
+    }
+  }, [Data]);
+
   const data = {
     labels: chartMonths,
     datasets: [
       {
         label: " Monthly Records for KanyenyainiTea Factory",
-        data: chartDart,
+        data: chartData,
         backgroundColor: [
           "blue",
           "green",

@@ -48,19 +48,19 @@ function FarmerSide() {
       >
         Training
       </Link>
-      <Box
-        pl={"30px"}
-        cursor={"pointer"}
+      <Link
+        to={"/"}
         style={{
           color: "black",
           fontWeight: "inherit",
+          paddingLeft: "30px",
         }}
         onClick={() => {
           setUser(null);
         }}
       >
         Logout
-      </Box>
+      </Link>
     </Flex>
   );
 }

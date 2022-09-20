@@ -77,7 +77,7 @@ const Login = () => {
         borderRadius={"md"}
       >
         <Heading textAlign={"center"} as="h6" size="lg">
-          Login
+          Farmer Login
         </Heading>
         <Input
           placeholder="phone number"

@@ -22,7 +22,7 @@ function NewItemModal({ isOpen, onClose, handleFetch, title, currentUser }) {
   const [center, setCenter] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-
+  const [role, setRole] = useState("");
   const [password, setPassword] = useState("");
   const [centers, setCenters] = useState([]);
 
@@ -47,6 +47,7 @@ function NewItemModal({ isOpen, onClose, handleFetch, title, currentUser }) {
       setCenter(currentUser?.tea_center);
       setPhone(currentUser?.phone_number);
       setEmail(currentUser?.email);
+      setRole(currentUser?.role);
     } else {
       setName("");
     }
@@ -81,7 +82,7 @@ function NewItemModal({ isOpen, onClose, handleFetch, title, currentUser }) {
         isClosable: true,
       });
       return false;
-    } else if (!isUpdateMode&&password === "") {
+    } else if (!isUpdateMode && password === "") {
       toast({
         title: "Password is required!",
         status: "error",
@@ -125,6 +126,7 @@ function NewItemModal({ isOpen, onClose, handleFetch, title, currentUser }) {
             password: password,
             email: email,
             tea_center: center._id,
+            role: role,
           }
         );
 
@@ -167,9 +169,23 @@ function NewItemModal({ isOpen, onClose, handleFetch, title, currentUser }) {
           onChange={(event) => setCenter(event.target.value)}
         /> */}
           <Select
+            defaultValue={role}
+            onChange={(event) => {
+              setRole(event.target.value);
+            }}
+            placeholder={
+              isUpdateMode && center?._id ? center?.name : "--Select Role--"
+            }
+          >
+            {["admin", "farmer", "agent"].map((center) => (
+              <option value={center}>{center}</option>
+            ))}
+          </Select>
+
+          <Select
             defaultValue={center}
             onChange={(event) => {
-              setCenter({...center,_id:event.target.value});
+              setCenter({ ...center, _id: event.target.value });
             }}
             placeholder={
               isUpdateMode && center?._id ? center?.name : "--Select center--"

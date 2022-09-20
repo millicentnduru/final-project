@@ -41,19 +41,20 @@ function AgentSideNav() {
         Add Sale
       </Link>
 
-      <Box
-        pl={"30px"}
+      <Link
+        to={"/"}
         cursor={"pointer"}
         style={{
           color: "black",
           fontWeight: "inherit",
+          paddingLeft: "30px",
         }}
         onClick={() => {
           setUser(null);
         }}
       >
         Logout
-      </Box>
+      </Link>
     </Flex>
   );
 }
